@@ -147,9 +147,6 @@ var canvas = document.getElementById("myCanvas");
 				
 				checkColision();
 				
-				
-				
-				
 				if (userInput.left && status.canMoveLeft)
 					x+=dx;
 				else if (userInput.right && status.canMoveRight)
