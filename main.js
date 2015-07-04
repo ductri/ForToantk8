@@ -11,6 +11,9 @@ var canvas = document.getElementById("myCanvas");
 	var map; map=createMap();
 	var userInput=new UserInput();
 
+	//Test area#######################################
+	//################################################
+	
 	
 	function keyDownHandler(e) {
 		//Left
@@ -91,7 +94,7 @@ var canvas = document.getElementById("myCanvas");
 
 				if (helper.checkColision2Rect(getRectBound(),map.getWallBound(index)))
 				{
-					
+					console.log("Has conlision!");
 					if (helper.checkPointBelongRect(x,canvas.height,map.getWallBound(index)))
 					{
 						status.canMoveRight=false;
@@ -144,10 +147,7 @@ var canvas = document.getElementById("myCanvas");
 				
 				checkColision();
 				
-				console.log("****************************");
-				userInput.show();
-				console.log("`````````````````````");
-				status.show();
+				
 				
 				
 				if (userInput.left && status.canMoveLeft)
@@ -246,6 +246,10 @@ var canvas = document.getElementById("myCanvas");
 				if (!this.checkPointBelongRect(rect2.x, rect2.y, rect1) &&
 					!this.checkPointBelongRect(rect2.x+rect2.w, rect2.y, rect1) &&
 					!this.checkPointBelongRect(rect2.x+rect2.w, rect2.y+rect2.h, rect1) &&
+					!this.checkPointBelongRect(rect2.x, rect2.y+rect2.h, rect1) && 
+					!this.checkPointBelongRect(rect1.x, rect1.y, rect2) && 
+					!this.checkPointBelongRect(rect1.x+rect1.w, rect1.y, rect2) &&
+					!this.checkPointBelongRect(rect1.x+rect1.w, rect1.y+rect1.h, rect2) &&
 					!this.checkPointBelongRect(rect2.x, rect2.y+rect2.h, rect1))
 					return false;
 				else return true;
