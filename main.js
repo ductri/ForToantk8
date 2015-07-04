@@ -18,11 +18,11 @@ var canvas = document.getElementById("myCanvas");
 	function keyDownHandler(e) {
 		//Left
 		if (e.keyCode==39) {
-			userInput.left=true;
+			userInput.right=true;
 		}
 		//Right
 		else if (e.keyCode==37)
-			userInput.right=true;
+			userInput.left=true;
 
 		if (e.keyCode==38)
 			userInput.up=true;
@@ -31,10 +31,10 @@ var canvas = document.getElementById("myCanvas");
 	function keyUpHandler(e) {
 		//Left
 		if (e.keyCode==39)
-			userInput.left=false;
+			userInput.right=false;
 		//Right
 		else if (e.keyCode==37)
-			userInput.right=false;
+			userInput.left=false;
 
 		if (e.keyCode==38)
 			userInput.up=false;
@@ -60,13 +60,14 @@ var canvas = document.getElementById("myCanvas");
 		var jumping=false;
 		var status=new Status();
 		function jumpUp() {
-			//checkColision();
+			checkColision();
 
 			tick+=speedJump;
 
 			y=yconst-Math.sin(tick)*100;
 			
 			if (tick>3.14)
+			//if (status.canMoveDown)
 			{
 				y=canvas.height - height;
 				tick=0;
@@ -95,16 +96,25 @@ var canvas = document.getElementById("myCanvas");
 				if (helper.checkColision2Rect(getRectBound(),map.getWallBound(index)))
 				{
 					console.log("Has conlision!");
-					if (helper.checkPointBelongRect(x,canvas.height,map.getWallBound(index)))
+					var wall=map.getWallBound(index);
+					console.log("wall.x"+wall.x);
+					console.log("x="+x);
+					if (x<wall.x)
+						status.canMoveRight=false;
+					if (x>wall.x)
+						status.canMoveLeft=false;
+
+					/*if (helper.checkPointBelongRect(x,y+height,map.getWallBound(index)))
 					{
 						status.canMoveRight=false;
-						
 					}
 						
-					if (helper.checkPointBelongRect(x+width,canvas.height,map.getWallBound(index)))
+					if (helper.checkPointBelongRect(x+width,y+height,map.getWallBound(index)))
 					{
 						status.canMoveLeft=false;
-					}
+					}*/
+
+					//if (helper.checkPointBelongRect())
 				}
 			}
 		}
@@ -147,9 +157,9 @@ var canvas = document.getElementById("myCanvas");
 				
 				checkColision();
 				
-				if (userInput.left && status.canMoveLeft)
+				if (userInput.right && status.canMoveRight)
 					x+=dx;
-				else if (userInput.right && status.canMoveRight)
+				else if (userInput.left && status.canMoveLeft)
 					x-=dx;
 				if (userInput.up && status.canMoveUp && !status.jumping)
 				{
