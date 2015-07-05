@@ -81,8 +81,7 @@ var canvas = document.getElementById("myCanvas");
 			
 			//if (tick>Math.PI/2)
 			//if (tick>Math.abs(v0/g))
-			if (!status.canMoveDown)
-			{
+			if (!status.canMoveDown) {
 				tick=0;
 				moveUp=false;
 				
@@ -90,17 +89,6 @@ var canvas = document.getElementById("myCanvas");
 				status.jumping=false;
 			}
 		};
-		//Luc di xuong thi di xuong bao nhieu cung dc, mien la khong gap vat can
-		/*function down() {
-			tick+=unknowRate;
-			y=yStatic+g*tick;
-			checkColision();
-			if (!status.canMoveDown)
-			{
-				tick=0;
-				clearInterval(intervalDownID);
-			}
-		}*/
 		function getRectBound() {
 			return new helper.createRect(x,y,width,height);
 		};
@@ -124,8 +112,7 @@ var canvas = document.getElementById("myCanvas");
 					break;
 				map.drawMap(index, -x + map.getWall(index).x + 240);
 
-				if (helper.checkColision2Rect(getRectBound(),map.getWallBound(index)))
-				{
+				if (helper.checkColision2Rect(getRectBound(),map.getWallBound(index))) {
 					
 					var wall=map.getWallBound(index);
 					var ballBounder=getRectBound();
@@ -137,7 +124,6 @@ var canvas = document.getElementById("myCanvas");
 							} else {
 								x=wall.x-width;
 							}
-
 						} else if (helper.checkPointBelongRect(wall.x, wall.y+wall.h,ballBounder)) {
 							if ((wall.y+wall.h)-y < x+width-wall.x) {
 								y=wall.y+wall.h;
@@ -167,7 +153,6 @@ var canvas = document.getElementById("myCanvas");
 						} else {
 							x=wall.x+wall.w;
 						}
-						
 					}
 
 					if (x+width == wall.x)
@@ -181,7 +166,9 @@ var canvas = document.getElementById("myCanvas");
 						status.canMoveDown=true;
 					if (x+width == wall.x && y+height == wall.y)
 						status.canMoveDown=true;
-
+				}
+			}
+		};
 		return {
 			/*seter, getter*/
 			setLeft: function(value) {
@@ -194,8 +181,7 @@ var canvas = document.getElementById("myCanvas");
 				moveUp=value;
 			},
 
-			drawBall:function()
-			{
+			drawBall:function()	{
 				ctx.beginPath();
 				ctx.rect(xconst, y, width, height);
 				ctx.fillStyle = "#FF0000";
@@ -251,8 +237,7 @@ var canvas = document.getElementById("myCanvas");
 
 	function createMap() {
 		var map=[];
-		function createMapRandom(length)
-		{
+		function createMapRandom(length) {
 			var wall_instance;
 			var x=0, y=0, h=0, w=0;
 			function Wall(x, y, w, h) {
@@ -302,13 +287,13 @@ var canvas = document.getElementById("myCanvas");
 				ctx.beginPath();
 				/*console.log("Begin draw wall: ", location, canvas.height - map[index].height, map[index].width, map[index].height);*/
 				ctx.rect(location, map[index].y, map[index].w, map[index].h);
-				/*ctx.fillStyle = "#FF00FF";
-				ctx.fill();*/
+				ctx.fillStyle = "#FF00FF";
+				ctx.fill();
 				/*ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
 				ctx.stroke();*/
 				ctx.closePath();
 			}
-		};
+		}
 	}
 
 	function createHelper() {
@@ -344,12 +329,7 @@ var canvas = document.getElementById("myCanvas");
 		}
 	}
 
-	/*var rect1 = new helper.createRect(0,0,10,10);
-	var rect2 = new helper.createRect(11,1,10,10);
-	console.log("Has colision :" + helper.checkColision2Rect(rect1,rect2));*/
-	
-	function mainLoop()
-	{
+	function mainLoop() {
 		myBall.move();
 		
 		window.requestAnimationFrame(mainLoop);
