@@ -44,9 +44,9 @@ var canvas = document.getElementById("myCanvas");
 		var height=50;
 		var width=50;
 		var x=350;
-		var xconst=240, yconst=canvas.height - height;
+		var xconst=240, yStatic=canvas.height - height;
 		var y=canvas.height - height;
-		var dx=3,dy=1;
+		var dx=2,dy=1;
 		var maxHeight=100;
 
 		var moveLeft=false;
@@ -55,24 +55,22 @@ var canvas = document.getElementById("myCanvas");
 		var moveUp=false;
 		//var jump=false;
 		var tick=0;
-		var speedJump=0.1;
+		var speedJump=0.05;
 		var intervalID=0;
 		var jumping=false;
 		var status=new Status();
 		function jumpUp() {
-			checkColision();
-
 			tick+=speedJump;
 
-			y=yconst-Math.sin(tick)*100;
+			y=yStatic-Math.sin(tick)*100;
+
+			checkColision();
 			
-			if (tick>3.14)
-			//if (status.canMoveDown)
+			if (tick>Math.PI/2)
 			{
-				y=canvas.height - height;
 				tick=0;
 				moveUp=false;
-				
+				console.log("intervalID="+intervalID);
 				clearInterval(intervalID);
 				status.jumping=false;
 			}
@@ -83,8 +81,15 @@ var canvas = document.getElementById("myCanvas");
 		function checkColision() {
 			status.canMoveLeft=true;
 			status.canMoveRight=true;
-			status.canMoveUp=true;
+			status.canMoveUp=false;
 			status.canMoveDown=true;
+			
+
+			if (y + height >= canvas.height) {
+				console.log("set fai");
+				status.canMoveDown=false;
+				y=canvas.height-height;
+			}
 
 			for (index = 0; index < map.length(); index++) {
 				if (x - map.getWall(index).location > 240)
@@ -95,15 +100,58 @@ var canvas = document.getElementById("myCanvas");
 
 				if (helper.checkColision2Rect(getRectBound(),map.getWallBound(index)))
 				{
-					console.log("Has conlision!");
+					
 					var wall=map.getWallBound(index);
-					console.log("wall.x"+wall.x);
-					console.log("x="+x);
-					if (x<wall.x)
-						status.canMoveRight=false;
-					if (x>wall.x)
-						status.canMoveLeft=false;
+					var ballBounder=getRectBound();
+					
+					if (x<wall.x) {
+						if (helper.checkPointBelongRect(wall.x,wall.y,ballBounder)) {
+							if (y+height-wall.y < x+width-wall.x) {
+								y=wall.y-height;
+							} else {
+								x=wall.x-width;
+							}
 
+						} else if (helper.checkPointBelongRect(wall.x, wall.y+wall.h,ballBounder)) {
+							if ((wall.y+wall.h)-y < x+width-wall.x) {
+								y=wall.y+wall.h;
+							} else {
+								x=wall.x-width;
+							}
+						} else {
+							x=wall.x-width;
+						}
+					}
+					else if (x+width>wall.x+wall.w) {
+						if (helper.checkPointBelongRect(wall.x+wall.w,wall.y,ballBounder)) {
+							
+							if (y+height-wall.y < wall.x+wall.w-x) {
+								y=wall.y-height;
+								
+							} else {
+								x=wall.x+wall.w;
+								
+							}
+						} else if (helper.checkPointBelongRect(wall.x+wall.w, wall.y+wall.h,ballBounder)) {
+							if ((wall.y+wall.h)-y < wall.x+wall.w-x) {
+								y=wall.y+wall.h;
+							} else {
+								x=wall.x+wall.w;
+							}
+						} else {
+							x=wall.x+wall.w;
+						}
+						
+					}
+
+					if (x+width == wall.x)
+						status.canMoveRight=false;
+					if (x == wall.x+wall.w)
+						status.canMoveLeft=false;
+					if (y+height == wall.y)
+						status.canMoveDown=false;
+
+					//if (y>)
 					/*if (helper.checkPointBelongRect(x,y+height,map.getWallBound(index)))
 					{
 						status.canMoveRight=false;
@@ -117,6 +165,7 @@ var canvas = document.getElementById("myCanvas");
 					//if (helper.checkPointBelongRect())
 				}
 			}
+			status.canMoveUp=!status.canMoveDown;
 		}
 
 		return {
@@ -161,9 +210,13 @@ var canvas = document.getElementById("myCanvas");
 					x+=dx;
 				else if (userInput.left && status.canMoveLeft)
 					x-=dx;
+				if (status.canMoveDown && !status.jumping)
+					y+=dy;
+				if (!status.jumping)
+					yStatic=y;
 				if (userInput.up && status.canMoveUp && !status.jumping)
 				{
-					intervalID=setInterval(jumpUp,40);
+					intervalID=setInterval(jumpUp,50);
 					status.jumping=true;
 				}
 				this.drawBall();
