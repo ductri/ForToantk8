@@ -56,7 +56,7 @@ function makeBall() {
 	
 	var tick=0;
 	var speedJump=0.15;
-	var jumpVelocity=1;
+	var jumpVelocity=10;
 	var intervalJumpID=0;
 	var intervalDownID=1;
 	var jumping=false;
@@ -70,8 +70,11 @@ function makeBall() {
 	function jumpUp() {
 		tick+=unknowRate;
 
-		if (!status.canMoveUp)
-			v0=10;
+		if (!status.canMoveUp) {
+			v0=150;
+			yStatic=y;
+			tick=unknowRate;
+		}
 
 		y=yStatic+v0*tick+0.5*g*tick*tick;
 		
@@ -85,9 +88,11 @@ function makeBall() {
 			status.jumping=false;
 		}
 	};
+
 	function getRectBound() {
 		return new helper.createRect(x,y,width,height);
 	};
+
 	function checkColision() {
 		status.canMoveLeft=true;
 		status.canMoveRight=true;
@@ -101,14 +106,14 @@ function makeBall() {
 		}
 
 		for (index = 0; index < map.length(); index++) {
-			if (x - map.getWall(index).x > 240)
+			if (x - map.getWall(index).x > canvas.width/2+100)
 				continue;
-			if (x - map.getWall(index).x < -240)
-				break;
+			if (x - map.getWall(index).x < -(canvas.width/2+240))
+				continue;
 			map.drawMap(index, -x + map.getWall(index).x + 240);
 
 			if (helper.checkColision2Rect(getRectBound(),map.getWallBound(index))) {
-				
+				console.log("Has collision");
 				var wall=map.getWallBound(index);
 				var ballBounder=getRectBound();
 				
@@ -149,6 +154,12 @@ function makeBall() {
 						x=wall.x+wall.w;
 					}
 				}
+				else {
+					if (y<wall.y)
+						y=wall.y-height;
+					else if (y+height>wall.y+wall.h)
+						y=wall.y+wall.h;
+				}
 
 				if (x+width == wall.x)
 					status.canMoveRight=false;
@@ -156,7 +167,10 @@ function makeBall() {
 					status.canMoveLeft=false;
 				if (y+height == wall.y)
 					status.canMoveDown=false;
+				if (y==wall.y+wall.h)
+					status.canMoveUp=false;
 
+				//Xet truong hop rieng 2 goc cham nhau
 				if (x == wall.x + wall.w && y+height == wall.y)
 					status.canMoveDown=true;
 				if (x+width == wall.x && y+height == wall.y)
@@ -164,6 +178,7 @@ function makeBall() {
 			}
 		}
 	};
+	
 	return {
 		/*seter, getter*/
 		setLeft: function(value) {
@@ -217,7 +232,7 @@ function makeBall() {
 				status.jumping=true;
 			}
 			if (status.canMoveDown && !status.jumping) {
-				v0=0;
+				v0=100;
 				intervalJumpID=setInterval(jumpUp,jumpVelocity);
 				status.jumping=true;
 			}
@@ -244,6 +259,15 @@ function createMap() {
 			w = helper.genRandomNumber(5,30);
 			h = helper.genRandomNumber(10,100);
 			y = canvas.height - h;
+			wall_instance = new Wall(x, y, w, h);
+			map.push(wall_instance);
+		}
+		x=0;
+		for (i=0;i<length;i++) {
+			x += helper.genRandomNumber(50,400);
+			y = helper.genRandomNumber(70,150);
+			w = helper.genRandomNumber(30,100);
+			h = helper.genRandomNumber(10,40);
 			wall_instance = new Wall(x, y, w, h);
 			map.push(wall_instance);
 		}
