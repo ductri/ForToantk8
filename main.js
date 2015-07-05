@@ -43,22 +43,16 @@ function keyUpHandler(e) {
 }
 
 function makeBall() {
-	var height=50;
-	var width=50;
-	var x=350;
-	var xconst=240, yStatic=gameEnv.bound.h - height;
+	var height=gameEnv.ballHeight;
+	var width=gameEnv.ballWidth;
+	var x=gameEnv.ballX;
+	var xconst=gameEnv.bound.w/2, yStatic=gameEnv.bound.h - height;
 	var y=gameEnv.bound.h - height;
-	var dx=2.5,dy=1;
-	var maxHeight=100;
+	var dx=gameEnv.ballDx;
 
-	var moveLeft=false;
-	var moveRight=false;
-	var moveDown=false;
-	var moveUp=false;
-	
 	var tick=0;
 	var speedJump=0.15;
-	var jumpVelocity=10;
+	var jumpVelocity=5;
 	var intervalJumpID=0;
 	var intervalDownID=1;
 	var jumping=false;
@@ -67,13 +61,15 @@ function makeBall() {
 	var unknowRate=0.015;
 
 	var vJump=-200;
+	var vDown=50;
+	var vReflect=150;
 	var v0=-vJump;
 	//Luc di len thi chi di len 1 doan nhat dinh
 	function jumpUp() {
 		tick+=unknowRate;
 
 		if (!status.canMoveUp) {
-			v0=150;
+			v0=vReflect;
 			yStatic=y;
 			tick=unknowRate;
 		}
@@ -112,7 +108,7 @@ function makeBall() {
 				continue;
 			if (x - map.getWall(index).x < -(gameEnv.bound.w/2+240))
 				continue;
-			map.drawMap(index, -x + map.getWall(index).x + 240);
+			map.drawMap(index, -x + map.getWall(index).x + gameEnv.bound.w/2);
 
 			if (helper.checkColision2Rect(getRectBound(),map.getWallBound(index))) {
 				console.log("Has collision");
@@ -183,15 +179,6 @@ function makeBall() {
 	
 	return {
 		/*seter, getter*/
-		setLeft: function(value) {
-			moveLeft=value;
-		},
-		setRight: function(value) {
-			moveRight=value;
-		},
-		setUp: function(value) {
-			moveUp=value;
-		},
 
 		drawBall:function()	{
 			ctx.beginPath();
@@ -202,18 +189,10 @@ function makeBall() {
 			ctx.stroke();
 			ctx.closePath();
 		},
+
 		getJumping: function(){
 			return jumping;
 		},
-		getMoveLeft: function() {
-			return moveLeft;
-		},
-		getMoveRight: function() {
-			return moveRight;
-		},
-		getMoveUp: function() {
-			return moveUp;
-		}, 
 		
 		move: function(e) {
 			ctx.clearRect(0,0,gameEnv.bound.w,gameEnv.bound.h);
@@ -227,14 +206,13 @@ function makeBall() {
 
 			if (!status.jumping)
 				yStatic=y;
-			if (userInput.up && status.canMoveUp && !status.jumping)
-			{
+			if (userInput.up && status.canMoveUp && !status.jumping) {
 				v0=vJump;
 				intervalJumpID=setInterval(jumpUp,jumpVelocity);
 				status.jumping=true;
 			}
 			if (status.canMoveDown && !status.jumping) {
-				v0=100;
+				v0=vDown;
 				intervalJumpID=setInterval(jumpUp,jumpVelocity);
 				status.jumping=true;
 			}
@@ -267,7 +245,7 @@ function createMap() {
 		x=0;
 		for (i=0;i<length;i++) {
 			x += helper.genRandomNumber(50,400);
-			y = helper.genRandomNumber(70,150);
+			y = gameEnv.bound.h-helper.genRandomNumber(100,350);
 			w = helper.genRandomNumber(30,100);
 			h = helper.genRandomNumber(10,40);
 			wall_instance = new Wall(x, y, w, h);

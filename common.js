@@ -30,4 +30,9 @@ function UserInput() {
 
 function GameEnv(canvas) {
 	this.bound = new helper.createRect(0,0,canvas.width, canvas.height);
+	this.ballHeight = 50;
+	this.ballWidth = 50;
+	this.ballX = 350;
+	this.ballDx = 2.5;
+
 }
