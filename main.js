@@ -118,11 +118,11 @@ var canvas = document.getElementById("myCanvas");
 			}
 
 			for (index = 0; index < map.length(); index++) {
-				if (x - map.getWall(index).location > 240)
+				if (x - map.getWall(index).x > 240)
 					continue;
-				if (x - map.getWall(index).location < -240)
+				if (x - map.getWall(index).x < -240)
 					break;
-				map.drawMap(index, -x + map.getWall(index).location + 240);
+				map.drawMap(index, -x + map.getWall(index).x + 240);
 
 				if (helper.checkColision2Rect(getRectBound(),map.getWallBound(index)))
 				{
@@ -181,19 +181,6 @@ var canvas = document.getElementById("myCanvas");
 						status.canMoveDown=true;
 					if (x+width == wall.x && y+height == wall.y)
 						status.canMoveDown=true;
-
-					//if (y>)
-					/*if (helper.checkPointBelongRect(x,y+height,map.getWallBound(index)))
-					{
-						status.canMoveRight=false;
-					}
-						
-					if (helper.checkPointBelongRect(x+width,y+height,map.getWallBound(index)))
-					{
-						status.canMoveLeft=false;
-					}*/
-
-					//if (helper.checkPointBelongRect())
 				}
 			}
 			//status.canMoveUp=!status.canMoveDown;
@@ -267,23 +254,24 @@ var canvas = document.getElementById("myCanvas");
 	}
 
 	function createMap() {
-		var map=[];/*[{location:420, height:40, width:20}, {location:450, height:30, width:20}, {location:470, height:40, width:10}, {location:500, height:40, width:20}, {location:520, height:40, width:20}, {location:550, height:40, width:20}, {location:600, height:40, width:20}, {location:630, height:40, width:5},
-			{location:650, height:40, width:20}]*/
+		var map=[];
 		function createMapRandom(length)
 		{
 			var wall_instance;
-			var location=0, height=0, width=0;
-			function Wall(loc, h, w) {
-				this.location = loc;
-				this.width = w;
-				this.height = h;
+			var x=0, y=0, h=0, w=0;
+			function Wall(x, y, w, h) {
+				this.x = x;
+				this.y = y;
+				this.w = w;
+				this.h = h;
 			}
 
 			for (i=0; i<length; i++){
-				location += helper.genRandomNumber(50, 500);
-				width = helper.genRandomNumber(5,30);
-				height = helper.genRandomNumber(10,100);
-				wall_instance = new Wall(location, height, width)
+				x += helper.genRandomNumber(50, 500);
+				w = helper.genRandomNumber(5,30);
+				h = helper.genRandomNumber(10,100);
+				y = canvas.height - h;
+				wall_instance = new Wall(x, y, w, h);
 				map.push(wall_instance);
 			}
 		}
@@ -308,19 +296,20 @@ var canvas = document.getElementById("myCanvas");
 				return map[index];
 			},
 
-
 			getWallBound:function(index) {
-				var t= new helper.createRect(map[index].location, canvas.height - map[index].height, map[index].width, map[index].height);
+				var t= new helper.createRect(map[index].x, map[index].y, map[index].w, map[index].h);
 				return t;
-				
 			},
-			drawMap:function(index, location)
-			{
+
+			//Ve 1 wall dua tren vi tri cua chinh no va vi tri cua nguoi choi
+			drawMap:function(index, location) {
 				ctx.beginPath();
 				/*console.log("Begin draw wall: ", location, canvas.height - map[index].height, map[index].width, map[index].height);*/
-				ctx.rect(location, canvas.height - map[index].height, map[index].width, map[index].height);
+				ctx.rect(location, map[index].y, map[index].w, map[index].h);
 				ctx.fillStyle = "#FF00FF";
 				ctx.fill();
+				/*ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
+				ctx.stroke();*/
 				ctx.closePath();
 			}
 		};
