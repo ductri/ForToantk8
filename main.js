@@ -302,8 +302,8 @@ var canvas = document.getElementById("myCanvas");
 				ctx.beginPath();
 				/*console.log("Begin draw wall: ", location, canvas.height - map[index].height, map[index].width, map[index].height);*/
 				ctx.rect(location, map[index].y, map[index].w, map[index].h);
-				ctx.fillStyle = "#FF00FF";
-				ctx.fill();
+				/*ctx.fillStyle = "#FF00FF";
+				ctx.fill();*/
 				/*ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
 				ctx.stroke();*/
 				ctx.closePath();
