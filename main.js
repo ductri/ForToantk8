@@ -55,26 +55,51 @@ var canvas = document.getElementById("myCanvas");
 		var moveUp=false;
 		//var jump=false;
 		var tick=0;
-		var speedJump=0.05;
-		var intervalID=0;
+		var speedJump=0.15;
+		var jumpVelocity=1;
+		var intervalJumpID=0;
+		var intervalDownID=1;
 		var jumping=false;
 		var status=new Status();
-		function jumpUp() {
-			tick+=speedJump;
+		var g=100;
+		var unknowRate=0.015;
 
-			y=yStatic-Math.sin(tick)*100;
+		var vJump=-200;
+		var v0=-vJump;
+		//Luc di len thi chi di len 1 doan nhat dinh
+		function jumpUp() {
+			tick+=unknowRate;//jumpVelocity/1000;
+
+			if (!status.canMoveUp)
+				v0=10;
+			y=yStatic+v0*tick+0.5*g*tick*tick;//-Math.sin(tick)*100;
+			//y=yStatic-(250-Math.abs(250-tick));
+			//y-=5;u
 
 			checkColision();
 			
-			if (tick>Math.PI/2)
+			//if (tick>Math.PI/2)
+			//if (tick>Math.abs(v0/g))
+			if (!status.canMoveDown)
 			{
 				tick=0;
 				moveUp=false;
-				console.log("intervalID="+intervalID);
-				clearInterval(intervalID);
+				
+				clearInterval(intervalJumpID);
 				status.jumping=false;
 			}
 		};
+		//Luc di xuong thi di xuong bao nhieu cung dc, mien la khong gap vat can
+		/*function down() {
+			tick+=unknowRate;
+			y=yStatic+g*tick;
+			checkColision();
+			if (!status.canMoveDown)
+			{
+				tick=0;
+				clearInterval(intervalDownID);
+			}
+		}*/
 		function getRectBound() {
 			return new helper.createRect(x,y,width,height);
 		};
@@ -151,6 +176,11 @@ var canvas = document.getElementById("myCanvas");
 					if (y+height == wall.y)
 						status.canMoveDown=false;
 
+					if (x == wall.x + wall.w && y+height == wall.y)
+						status.canMoveDown=true;
+					if (x+width == wall.x && y+height == wall.y)
+						status.canMoveDown=true;
+
 					//if (y>)
 					/*if (helper.checkPointBelongRect(x,y+height,map.getWallBound(index)))
 					{
@@ -201,7 +231,7 @@ var canvas = document.getElementById("myCanvas");
 				return moveUp;
 			}, 
 			
-			move:function(e) {
+			move: function(e) {
 				ctx.clearRect(0,0,canvas.width,canvas.height);
 				
 				checkColision();
@@ -210,15 +240,26 @@ var canvas = document.getElementById("myCanvas");
 					x+=dx;
 				else if (userInput.left && status.canMoveLeft)
 					x-=dx;
-				if (status.canMoveDown && !status.jumping)
-					y+=dy;
+
+				/*if (status.canMoveDown && !status.jumping) {
+					intervalDownID=setInterval(down,jumpVelocity);
+				}*/
+
+					//y+=dy;
 				if (!status.jumping)
 					yStatic=y;
 				if (userInput.up && status.canMoveUp && !status.jumping)
 				{
-					intervalID=setInterval(jumpUp,50);
+					v0=vJump;
+					intervalJumpID=setInterval(jumpUp,jumpVelocity);
 					status.jumping=true;
 				}
+				if (status.canMoveDown && !status.jumping) {
+					v0=0;
+					intervalJumpID=setInterval(jumpUp,jumpVelocity);
+					status.jumping=true;
+				}
+
 				this.drawBall();
 			}
 		}
