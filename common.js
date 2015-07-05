@@ -27,3 +27,7 @@ function UserInput() {
 		console.log("want to move down: "+this.down);
 	}
 }
+
+function GameEnv(canvas) {
+	this.bound = new helper.createRect(0,0,canvas.width, canvas.height);
+}

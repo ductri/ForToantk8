@@ -4,6 +4,8 @@ var ctx = canvas.getContext("2d");
 document.addEventListener("keydown",keyDownHandler,false);
 document.addEventListener("keyup",keyUpHandler,false);
 var helper; helper=createHelper();
+var gameEnv;
+gameEnv=new GameEnv(canvas);
 var myBall;
 myBall = makeBall();
 myBall.drawBall();
@@ -44,8 +46,8 @@ function makeBall() {
 	var height=50;
 	var width=50;
 	var x=350;
-	var xconst=240, yStatic=canvas.height - height;
-	var y=canvas.height - height;
+	var xconst=240, yStatic=gameEnv.bound.h - height;
+	var y=gameEnv.bound.h - height;
 	var dx=2.5,dy=1;
 	var maxHeight=100;
 
@@ -100,15 +102,15 @@ function makeBall() {
 		status.canMoveDown=true;
 		
 
-		if (y + height >= canvas.height) {
+		if (y + height >= gameEnv.bound.h) {
 			status.canMoveDown=false;
-			y=canvas.height-height;
+			y=gameEnv.bound.h-height;
 		}
 
 		for (index = 0; index < map.length(); index++) {
-			if (x - map.getWall(index).x > canvas.width/2+100)
+			if (x - map.getWall(index).x > gameEnv.bound.w/2+100)
 				continue;
-			if (x - map.getWall(index).x < -(canvas.width/2+240))
+			if (x - map.getWall(index).x < -(gameEnv.bound.w/2+240))
 				continue;
 			map.drawMap(index, -x + map.getWall(index).x + 240);
 
@@ -214,7 +216,7 @@ function makeBall() {
 		}, 
 		
 		move: function(e) {
-			ctx.clearRect(0,0,canvas.width,canvas.height);
+			ctx.clearRect(0,0,gameEnv.bound.w,gameEnv.bound.h);
 			
 			checkColision();
 			
@@ -258,7 +260,7 @@ function createMap() {
 			x += helper.genRandomNumber(50, 500);
 			w = helper.genRandomNumber(5,30);
 			h = helper.genRandomNumber(10,100);
-			y = canvas.height - h;
+			y = gameEnv.bound.h - h;
 			wall_instance = new Wall(x, y, w, h);
 			map.push(wall_instance);
 		}
