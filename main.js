@@ -15,6 +15,15 @@ var userInput=new UserInput();
 
 //Test area#######################################
 //################################################
+//################################################
+//GAME INIT
+//################################################
+var bgImage=document.getElementById("bgImage");
+//ctx.drawImage(bgImage,gameEnv.bound.w,gameEnv.bound.h);
+ctx.drawImage(bgImage,0,0);
+//################################################
+//END OF GAME INIT
+//################################################
 
 
 function keyDownHandler(e) {
@@ -196,7 +205,7 @@ function makeBall() {
 		
 		move: function(e) {
 			ctx.clearRect(0,0,gameEnv.bound.w,gameEnv.bound.h);
-			
+			ctx.drawImage(bgImage,0,0);
 			checkColision();
 			
 			if (userInput.right && status.canMoveRight)
