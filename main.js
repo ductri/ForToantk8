@@ -20,10 +20,16 @@ var userInput=new UserInput();
 //################################################
 var bgImage=document.getElementById("bgImage");
 //ctx.drawImage(bgImage,gameEnv.bound.w,gameEnv.bound.h);
-ctx.drawImage(bgImage,0,0);
+
+var bx=0,by=bgImage.naturalHeight-gameEnv.bound.h;
+
+
 //################################################
 //END OF GAME INIT
 //################################################
+function drawBackground() {
+    ctx.drawImage(bgImage,bx,by,gameEnv.bound.w, gameEnv.bound.h, gameEnv.bound.x, gameEnv.bound.y, gameEnv.bound.w, gameEnv.bound.h);
+}
 
 
 function keyDownHandler(e) {
@@ -107,9 +113,9 @@ function makeBall() {
 		status.canMoveDown=true;
 		
 
-		if (y + height >= gameEnv.bound.h) {
+		if (y + height >= gameEnv.groundHeight) {
 			status.canMoveDown=false;
-			y=gameEnv.bound.h-height;
+			y=gameEnv.groundHeight-height;
 		}
 
 		for (index = 0; index < map.length(); index++) {
@@ -186,6 +192,16 @@ function makeBall() {
 		}
 	};
 	
+    function moveLeft() {
+        x+=dx;
+        bx+=dx/2;
+        
+    }
+    
+    function moveRight() {
+        x-=dx;
+        bx-=dx/2;
+    }
 	return {
 		/*seter, getter*/
 
@@ -204,14 +220,16 @@ function makeBall() {
 		},
 		
 		move: function(e) {
-			ctx.clearRect(0,0,gameEnv.bound.w,gameEnv.bound.h);
-			ctx.drawImage(bgImage,0,0);
+			
+			
 			checkColision();
 			
-			if (userInput.right && status.canMoveRight)
-				x+=dx;
-			else if (userInput.left && status.canMoveLeft)
-				x-=dx;
+			if (userInput.right && status.canMoveRight) {
+				moveLeft();
+			}
+			else if (userInput.left && status.canMoveLeft) {
+				moveRight();
+			}
 
 			if (!status.jumping)
 				yStatic=y;
@@ -245,16 +263,17 @@ function createMap() {
 
 		for (i=0; i<length; i++){
 			x += helper.genRandomNumber(50, 500);
+			x += helper.genRandomNumber(50, 500);
 			w = helper.genRandomNumber(5,30);
 			h = helper.genRandomNumber(10,100);
-			y = gameEnv.bound.h - h;
+			y = gameEnv.groundHeight - h;
 			wall_instance = new Wall(x, y, w, h);
 			map.push(wall_instance);
 		}
 		x=0;
 		for (i=0;i<length;i++) {
 			x += helper.genRandomNumber(50,400);
-			y = gameEnv.bound.h-helper.genRandomNumber(100,350);
+			y = gameEnv.groundHeight-helper.genRandomNumber(100,350);
 			w = helper.genRandomNumber(30,100);
 			h = helper.genRandomNumber(10,40);
 			wall_instance = new Wall(x, y, w, h);
@@ -293,40 +312,9 @@ function createMap() {
 	}
 }
 
-function createHelper() {
-	return {
-		genRandomNumber: function(min, max) {
-			return Math.floor(Math.random()*(max-min)) + min;
-		},
-		createRect: function(xx,yy,w,h) {
-			this.x = xx;
-			this.y = yy;
-			this.w = w;
-			this.h = h;
-		},
-
-		checkPointBelongRect: function(x, y, rect) {
-			if (x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h)
-				return true;
-			else return false;
-		},
-
-		checkColision2Rect: function(rect1, rect2) {
-			if (!this.checkPointBelongRect(rect2.x, rect2.y, rect1) &&
-				!this.checkPointBelongRect(rect2.x+rect2.w, rect2.y, rect1) &&
-				!this.checkPointBelongRect(rect2.x+rect2.w, rect2.y+rect2.h, rect1) &&
-				!this.checkPointBelongRect(rect2.x, rect2.y+rect2.h, rect1) && 
-				!this.checkPointBelongRect(rect1.x, rect1.y, rect2) && 
-				!this.checkPointBelongRect(rect1.x+rect1.w, rect1.y, rect2) &&
-				!this.checkPointBelongRect(rect1.x+rect1.w, rect1.y+rect1.h, rect2) &&
-				!this.checkPointBelongRect(rect2.x, rect2.y+rect2.h, rect1))
-				return false;
-			else return true;
-		}
-	}
-}
-
 function mainLoop() {
+    
+    drawBackground();
 	myBall.move();
 	
 	window.requestAnimationFrame(mainLoop);
