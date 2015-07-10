@@ -1,11 +1,24 @@
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
-
-document.addEventListener("keydown",keyDownHandler,false);
-document.addEventListener("keyup",keyUpHandler,false);
+//################################################
+//GAME INIT
+//################################################
 var helper; helper=createHelper();
 var gameEnv;
 gameEnv=new GameEnv(canvas);
+
+var bgImage=document.getElementById("bgImage");
+//ctx.drawImage(bgImage,gameEnv.bound.w,gameEnv.bound.h);
+
+var bx=0,by=bgImage.naturalHeight-gameEnv.bound.h;
+var sprites=document.getElementById("sprites");
+
+//################################################
+//END OF GAME INIT
+//################################################
+document.addEventListener("keydown",keyDownHandler,false);
+document.addEventListener("keyup",keyUpHandler,false);
+
 var myBall;
 myBall = makeBall();
 myBall.drawBall();
@@ -15,18 +28,7 @@ var userInput=new UserInput();
 
 //Test area#######################################
 //################################################
-//################################################
-//GAME INIT
-//################################################
-var bgImage=document.getElementById("bgImage");
-//ctx.drawImage(bgImage,gameEnv.bound.w,gameEnv.bound.h);
 
-var bx=0,by=bgImage.naturalHeight-gameEnv.bound.h;
-
-
-//################################################
-//END OF GAME INIT
-//################################################
 function drawBackground() {
     ctx.drawImage(bgImage,bx,by,gameEnv.bound.w, gameEnv.bound.h, gameEnv.bound.x, gameEnv.bound.y, gameEnv.bound.w, gameEnv.bound.h);
 }
@@ -206,13 +208,14 @@ function makeBall() {
 		/*seter, getter*/
 
 		drawBall:function()	{
-			ctx.beginPath();
+			/*ctx.beginPath();
 			ctx.rect(xconst, y, width, height);
-			/*ctx.fillStyle = "#FF0000";
-			ctx.fill();*/
+			ctx.fill();
 			ctx.strokeStyle = "rgba(255, 0, 0, 1)";
 			ctx.stroke();
-			ctx.closePath();
+			ctx.closePath();*/
+            //ctx.drawImage(bgImage,bx,by,gameEnv.bound.w, gameEnv.bound.h, gameEnv.bound.x, gameEnv.bound.y, gameEnv.bound.w, gameEnv.bound.h);
+            ctx.drawImage(sprites,3,5,16,24,xconst,y,width,height);
 		},
 
 		getJumping: function(){
@@ -313,7 +316,7 @@ function createMap() {
 }
 
 function mainLoop() {
-    
+    ctx.clearRect(0,0,gameEnv.bound.w,gameEnv.bound.h);
     drawBackground();
 	myBall.move();
 	
