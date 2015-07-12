@@ -34,8 +34,7 @@ function GameEnv(canvas) {
 	this.ballHeight = 50;
 	this.ballWidth = 50;
 	this.ballX = 350;
-	this.ballDx = 2.5;
-    this.groundHeight = this.bound.h - 125;
+	this.ballDx = 6;
 }
 
 function createHelper() {
